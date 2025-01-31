@@ -1,0 +1,3 @@
+[submodule "benches/LiveCodeBench"]
+	path = benches/LiveCodeBench
+	url = https://github.com/mgush/LiveCodeBench.git
