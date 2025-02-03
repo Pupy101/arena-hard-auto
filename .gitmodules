@@ -1,3 +1,7 @@
 [submodule "benches/LiveCodeBench"]
 	path = benches/LiveCodeBench
 	url = https://github.com/mgush/LiveCodeBench.git
+[submodule "benches/FastChat"]
+	path = benches/FastChat
+	url = https://github.com/Pupy101/FastChat.git
+	branch = giga
