@@ -41,4 +41,4 @@ docker build . -t obb
 - Включить в него возможность делать запросы скопировав код из [репозитория](https://gitlab.com/ru.ush/lightweight-gigachat) или добавив его как модуль ([нужная ветка репозитория](https://gitlab.com/ru.ush/lightweight-gigachat/-/tree/module) и пример: [добавления в зависимости](https://github.com/Pupy101/FastChat/blob/giga/pyproject.toml#L25) и [использование модуля в коде](https://github.com/Pupy101/FastChat/blob/giga/fastchat/llm_judge/common.py#L439))
 - Добавить форк в сабмодули в папке [`benches`](./benches/);
 - Дописать в Dockerfile создание нового окружения с зависимостями необходимыми для бенчмарка;
-- Написать документацию для запуска бенчмарка в папку [docs](./docs/).
+- Написать документацию для запуска бенчмарка в папку [`docs`](./docs/).
