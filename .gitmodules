@@ -1,7 +1,16 @@
-[submodule "benches/LiveCodeBench"]
-	path = benches/LiveCodeBench
-	url = https://github.com/mgush/LiveCodeBench.git
 [submodule "benches/FastChat"]
 	path = benches/FastChat
 	url = https://github.com/Pupy101/FastChat.git
+	branch = giga
+[submodule "benches/LiveBench"]
+	path = benches/LiveBench
+	url = https://github.com/Pupy101/LiveBench.git
+	branch = giga
+[submodule "benches/LiveCodeBench"]
+	path = benches/LiveCodeBench
+	url = https://github.com/Pupy101/LiveCodeBench.git
+	branch = giga
+[submodule "benches/arena-hard-auto"]
+	path = benches/arena-hard-auto
+	url = https://github.com/Pupy101/arena-hard-auto.git
 	branch = giga
