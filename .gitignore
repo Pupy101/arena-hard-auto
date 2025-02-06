@@ -1,0 +1,5 @@
+data/fastchat/mt_bench/model_answer
+data/fastchat/mt_bench/model_judgment
+data/fastchat/mt_bench-ru/model_answer
+data/fastchat/mt_bench-ru/model_judgment
+.env

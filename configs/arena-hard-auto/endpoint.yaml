@@ -1,0 +1,13 @@
+gpt-4-1106-preview:
+    model_name: gpt-4-1106-preview
+    endpoints:
+      api_base: <url>
+      api_key: <key>
+    api_type: openai
+    parallel: 8
+
+gigachat:
+    model_name: GigaChat
+    endpoints: null
+    api_type: giga
+    parallel: 10
