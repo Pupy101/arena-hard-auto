@@ -22,7 +22,7 @@
 git submodule update --init --recursive
 ```
 
-- Загрузка всех сабмодулей
+- Сборка образа для замеров
 
 ```bash
 docker build . -t obb
