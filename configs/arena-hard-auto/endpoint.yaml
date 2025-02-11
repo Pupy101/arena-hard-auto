@@ -1,8 +1,16 @@
 gpt-4-1106-preview:
     model_name: gpt-4-1106-preview
     endpoints:
-      api_base: <url>
-      api_key: <key>
+        - api_base: &url <url>
+          api_key: &api_key <key>
+    api_type: openai
+    parallel: 8
+
+gpt-4o:
+    model_name: gpt-4o
+    endpoints:
+        - api_base: *url
+          api_key: *api_key
     api_type: openai
     parallel: 8
 

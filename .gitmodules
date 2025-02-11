@@ -14,3 +14,7 @@
 	path = benches/arena-hard-auto
 	url = https://github.com/Pupy101/arena-hard-auto.git
 	branch = giga
+[submodule "benches/RuLLMArena"]
+	path = benches/RuLLMArena
+	url = https://github.com/Pupy101/ru_llm_arena.git
+	branch = giga

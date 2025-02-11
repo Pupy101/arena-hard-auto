@@ -33,6 +33,13 @@ RUN python -m venv /benches/venvs/lcb && \
     /benches/venvs/lcb/bin/pip install --no-cache-dir lcb/ \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
+# RuLLMArena
+COPY ./benches/RuLLMArena /benches/rla
+RUN python -m venv /benches/venvs/rla && \
+    /benches/venvs/rla/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/rla/bin/pip install --no-cache-dir \
+    -r rla/requirements.txt -r rla/requirements-optional.txt
+
 # Add helper script for environment activation
 RUN echo '#!/bin/bash\nsource /benches/venvs/$1/bin/activate\ncd /benches/$2\nshift 2\nexec "$@"' > /entrypoint.sh \
     && chmod +x /entrypoint.sh
