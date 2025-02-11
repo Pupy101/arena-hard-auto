@@ -1,0 +1,30 @@
+gpt-4-1106-preview:
+    model_name: gpt-4-1106-preview
+    endpoints:
+        - api_base: &url <url>
+          api_key: &api_key <key>
+    api_type: openai
+    parallel: 3
+
+gpt-3.5-turbo-0125:
+    model_name: gpt-3.5-turbo-0125
+    endpoints:
+        - api_base: *url
+          api_key: *api_key
+    api_type: openai
+    parallel: 6
+
+gpt-3.5-turbo-0125-ru-sys:
+    model_name: gpt-3.5-turbo-0125
+    endpoints:
+        - api_base: *url
+          api_key: *api_key
+    system_prompt: You are a helpful assistant. Answer on Russian.
+    api_type: openai
+    parallel: 6
+
+gigachat:
+    model_name: GigaChat
+    endpoints: null
+    api_type: giga
+    parallel: 10
