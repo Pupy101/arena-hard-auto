@@ -18,3 +18,11 @@
 	path = benches/RuLLMArena
 	url = https://github.com/Pupy101/ru_llm_arena.git
 	branch = giga
+[submodule "benches/evalplus"]
+	path = benches/evalplus
+	url = https://github.com/Pupy101/evalplus.git
+	branch = giga
+[submodule "benches/repoqa"]
+	path = benches/repoqa
+	url = https://github.com/Pupy101/repoqa.git
+	branch = giga
