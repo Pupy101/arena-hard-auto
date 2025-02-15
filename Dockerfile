@@ -12,6 +12,13 @@ RUN python -m venv /benches/venvs/ah && \
     /benches/venvs/ah/bin/pip install --no-cache-dir \
     -r ah/requirements.txt -r ah/requirements-optional.txt
 
+# EvalPlus
+COPY ./benches/evalplus /benches/ep
+RUN python -m venv /benches/venvs/ep && \
+    /benches/venvs/ep/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/ep/bin/pip install --no-cache-dir ep/'[perf]' && \
+    sh -c 'echo 0 > /proc/sys/kernel/perf_event_paranoid'
+
 # MT-Bench
 COPY ./benches/FastChat /benches/fc
 RUN python -m venv /benches/venvs/fc && \
@@ -32,6 +39,12 @@ RUN python -m venv /benches/venvs/lcb && \
     /benches/venvs/lcb/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/lcb/bin/pip install --no-cache-dir lcb/ \
     --extra-index-url https://download.pytorch.org/whl/cpu
+
+# RepoQA
+COPY ./benches/repoqa /benches/rqa
+RUN python -m venv /benches/venvs/rqa && \
+    /benches/venvs/rqa/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/rqa/bin/pip install --no-cache-dir rqa/
 
 # RuLLMArena
 COPY ./benches/RuLLMArena /benches/rla

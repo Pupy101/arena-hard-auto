@@ -1,3 +1,7 @@
+# [Fork Link](https://github.com/Pupy101/LiveCodeBench/tree/giga)
+
+---
+
 # Table of context:
 1. [Evaluation](#evaluation)
 
@@ -20,5 +24,5 @@ Main CLI arguments:
 Example for GigaChat in Advanced (fill variables in `example.env`):
 
 ```bash
-docker run --env-file example.env -v ./data/live_code_bench:/benches/lcb/output -it <IMAGE> lcb lcb python -m lcb_runner.runner.main <ARGS>
+docker run --env-file example.env -v ./data/live_code_bench:/benches/lcb/output -it <IMAGE> lcb lcb python -m lcb_runner.runner.main --model GigaChat --scenario codegeneration --evaluate --release_version release_v5
 ```
