@@ -26,3 +26,7 @@
 	path = benches/repoqa
 	url = https://github.com/Pupy101/repoqa.git
 	branch = giga
+[submodule "benches/cruxeval"]
+	path = benches/cruxeval
+	url = https://github.com/Pupy101/cruxeval.git
+	branch = giga

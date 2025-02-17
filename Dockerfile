@@ -12,6 +12,12 @@ RUN python -m venv /benches/venvs/ah && \
     /benches/venvs/ah/bin/pip install --no-cache-dir \
     -r ah/requirements.txt -r ah/requirements-optional.txt
 
+# CRUXEval
+COPY ./benches/cruxeval /benches/ce
+RUN python -m venv /benches/venvs/ce && \
+    /benches/venvs/ce/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/ce/bin/pip install --no-cache-dir ce/requirements.txt
+
 # EvalPlus
 COPY ./benches/evalplus /benches/ep
 RUN python -m venv /benches/venvs/ep && \
