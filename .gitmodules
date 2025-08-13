@@ -30,3 +30,7 @@
 	path = benches/cruxeval
 	url = https://github.com/Pupy101/cruxeval.git
 	branch = giga
+[submodule "benches/aider"]
+	path = benches/aider
+	url = https://github.com/ArtiomNosov/aider
+	branch = giga

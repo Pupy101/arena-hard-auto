@@ -1,0 +1,14 @@
+########################
+# API Keys and settings:
+
+## Specify the OpenAI API key (используется для GigaChat через OpenAI-совместимый API)
+openai-api-key: <YOUR OPEN AI KEY>
+
+## Specify the api base url for GigaChat
+openai-api-base: <BASE URL>
+
+#############
+# Main model:
+
+## Specify the default model to use for the main chat
+model: gigachat
