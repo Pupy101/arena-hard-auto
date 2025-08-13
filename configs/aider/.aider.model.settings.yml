@@ -1,0 +1,55 @@
+
+# GigaChat models
+- name: gigachat/GigaChat-2:latest
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-2:latest
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff
+
+- name: gigachat/GigaChat-2:latest-2024-12-19
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-2:latest-2024-12-19
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff
+
+- name: gigachat/GigaChat-Pro:latest
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-Pro:latest
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff
+
+- name: gigachat/GigaChat-Pro:latest-2024-12-19
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-Pro:latest-2024-12-19
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff
+
+- name: gigachat/GigaChat-2.5:latest
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-2.5:latest
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff
+
+- name: gigachat/GigaChat-2.5:latest-2024-12-19
+  edit_format: diff
+  weak_model_name: gigachat/GigaChat-2.5:latest-2024-12-19
+  use_repo_map: true
+  lazy: true
+  reminder: sys
+  examples_as_sys_msg: true
+  editor_edit_format: editor-diff

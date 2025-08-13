@@ -1,0 +1,80 @@
+{
+    "gigachat/GigaChat-2:latest": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  },
+  "gigachat/GigaChat-2:latest-2024-12-19": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  },
+  "gigachat/GigaChat-Pro:latest": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  },
+  "gigachat/GigaChat-Pro:latest-2024-12-19": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  },
+  "gigachat/GigaChat-2.5:latest": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  },
+  "gigachat/GigaChat-2.5:latest-2024-12-19": {
+        "max_tokens": 8192,
+        "max_input_tokens": 32768,
+        "max_output_tokens": 8192,
+        "input_cost_per_token": 0.0000001,
+        "output_cost_per_token": 0.0000002,
+        "litellm_provider": "gigachat",
+        "mode": "chat",
+        "supports_function_calling": true,
+        "supports_assistant_prefill": true,
+        "supports_tool_choice": true,
+        "supports_prompt_caching": true
+  }
+}
