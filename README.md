@@ -25,7 +25,7 @@ git submodule update --init --recursive
 - Сборка образа для замеров
 
 ```bash
-docker build . -t obb
+docker build --build-arg HOST_UID=$(id -u) --build-arg HOST_GID=$(id -g) -t obb .
 ```
 
 ### Документация:
