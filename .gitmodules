@@ -34,3 +34,7 @@
 	path = benches/aider
 	url = https://github.com/ArtiomNosov/aider
 	branch = giga
+[submodule "benches/Multi-IF"]
+	path = benches/Multi-IF
+	url = https://github.com/ArtiomNosov/Multi-IF.git
+	branch = giga

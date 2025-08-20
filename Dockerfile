@@ -1,59 +1,73 @@
 FROM python:3.10
 
+# Получаем UID и GID из переменных окружения хоста
+ARG HOST_UID
+ARG HOST_GID
+
+# Создаем группу и пользователя с UID/GID хоста или используем значения по умолчанию
+RUN groupadd -g ${HOST_GID:-1000} appuser && \
+    useradd -u ${HOST_UID:-1000} -g appuser -m -s /bin/bash appuser
+
 WORKDIR /benches
 
 # Create virtual environments directory
 RUN mkdir -p /benches/venvs
 
+# Изменяем владельца рабочей директории
+RUN chown -R appuser:appuser /benches
+
+# Переключаемся на пользователя appuser
+USER appuser
+
 # Arena-Hard-Auto
-COPY ./benches/arena-hard-auto /benches/ah
+COPY --chown=appuser:appuser ./benches/arena-hard-auto /benches/ah
 RUN python -m venv /benches/venvs/ah && \
     /benches/venvs/ah/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/ah/bin/pip install --no-cache-dir \
     -r ah/requirements.txt -r ah/requirements-optional.txt
 
 # CRUXEval
-COPY ./benches/cruxeval /benches/ce
+COPY --chown=appuser:appuser ./benches/cruxeval /benches/ce
 RUN python -m venv /benches/venvs/ce && \
     /benches/venvs/ce/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/ce/bin/pip install --no-cache-dir -r ce/requirements.txt
 
 # EvalPlus
-COPY ./benches/evalplus /benches/ep
+COPY --chown=appuser:appuser ./benches/evalplus /benches/ep
 RUN python -m venv /benches/venvs/ep && \
     /benches/venvs/ep/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/ep/bin/pip install --no-cache-dir ep/'[perf]' && \
     sh -c 'echo 0 > /proc/sys/kernel/perf_event_paranoid'
 
 # MT-Bench
-COPY ./benches/FastChat /benches/fc
+COPY --chown=appuser:appuser ./benches/FastChat /benches/fc
 RUN python -m venv /benches/venvs/fc && \
     /benches/venvs/fc/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/fc/bin/pip install --no-cache-dir fc/'[model_worker,llm_judge]' \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 # LiveBench
-COPY ./benches/LiveBench /benches/lb
+COPY --chown=appuser:appuser ./benches/LiveBench /benches/lb
 RUN python -m venv /benches/venvs/lb && \
     /benches/venvs/lb/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/lb/bin/pip install --no-cache-dir lb/ \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 # LiveCodeBench
-COPY ./benches/LiveCodeBench /benches/lcb
+COPY --chown=appuser:appuser ./benches/LiveCodeBench /benches/lcb
 RUN python -m venv /benches/venvs/lcb && \
     /benches/venvs/lcb/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/lcb/bin/pip install --no-cache-dir lcb/ \
     --extra-index-url https://download.pytorch.org/whl/cpu
 
 # RepoQA
-COPY ./benches/repoqa /benches/rqa
+COPY --chown=appuser:appuser ./benches/repoqa /benches/rqa
 RUN python -m venv /benches/venvs/rqa && \
     /benches/venvs/rqa/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/rqa/bin/pip install --no-cache-dir rqa/
 
 # RuLLMArena
-COPY ./benches/RuLLMArena /benches/rla
+COPY --chown=appuser:appuser ./benches/RuLLMArena /benches/rla
 RUN python -m venv /benches/venvs/rla && \
     /benches/venvs/rla/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/rla/bin/pip install --no-cache-dir \
@@ -61,7 +75,8 @@ RUN python -m venv /benches/venvs/rla && \
 
 # Aider
 # Aider - используем git clone вместо COPY
-RUN git clone -b giga https://github.com/ArtiomNosov/aider.git /benches/ad
+RUN git clone -b giga https://github.com/ArtiomNosov/aider.git /benches/ad && \
+    chown -R appuser:appuser /benches/ad
 
 # Install Python 3.11
 RUN apt-get update && apt-get install -y \
@@ -125,10 +140,22 @@ RUN /benches/venvs/ad/bin/pip install --no-cache-dir -e /benches/ad[dev]
 RUN git config --global --add safe.directory /benches/ad
 RUN git clone https://github.com/Aider-AI/polyglot-benchmark .data/aider/polyglot-benchmark
 
+# Multi-IF
+COPY --chown=appuser:appuser ./benches/Multi-IF /benches/mif
+RUN python -m venv /benches/venvs/mif && \
+    /benches/venvs/mif/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/mif/bin/pip install --no-cache-dir -r mif/requirements.txt && \
+    /benches/venvs/mif/bin/python -m nltk.downloader punkt punkt_tab
+
+# Временно переключаемся на root для создания системных файлов
+USER root
 
 # Add helper script for environment activation
 RUN echo '#!/bin/bash\nsource /benches/venvs/$1/bin/activate\ncd /benches/$2\nshift 2\nexec "$@"' > /entrypoint.sh \
     && chmod +x /entrypoint.sh
+
+# Переключаемся обратно на appuser
+USER appuser
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["ah", "ah"]
