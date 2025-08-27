@@ -12,7 +12,7 @@
 	branch = giga
 [submodule "benches/arena-hard-auto"]
 	path = benches/arena-hard-auto
-	url = https://github.com/Pupy101/arena-hard-auto.git
+	url = https://github.com/ArtiomNosov/arena-hard-auto.git
 	branch = giga
 [submodule "benches/RuLLMArena"]
 	path = benches/RuLLMArena
