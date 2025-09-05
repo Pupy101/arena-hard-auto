@@ -38,3 +38,6 @@
 	path = benches/Multi-IF
 	url = https://github.com/ArtiomNosov/Multi-IF.git
 	branch = giga
+[submodule "benches/tau2-bench"]
+	path = benches/tau2-bench
+	url = https://github.com/Skripkon/tau2-bench
