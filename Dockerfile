@@ -147,6 +147,13 @@ RUN python -m venv /benches/venvs/mif && \
     /benches/venvs/mif/bin/pip install --no-cache-dir -r mif/requirements.txt && \
     /benches/venvs/mif/bin/python -m nltk.downloader punkt punkt_tab
 
+# Tau2-Bench
+COPY --chown=appuser:appuser ./benches/tau2-bench /benches/tau2
+RUN python -m venv /benches/venvs/tau2 && \
+    /benches/venvs/tau2/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/tau2/bin/pip install --no-cache-dir -e tau2/ && \
+    /benches/venvs/tau2/bin/pip install --no-cache-dir langchain langchain_gigachat
+
 # Временно переключаемся на root для создания системных файлов
 USER root
 
