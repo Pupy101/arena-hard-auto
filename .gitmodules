@@ -10,10 +10,6 @@
 	path = benches/LiveCodeBench
 	url = https://github.com/Pupy101/LiveCodeBench.git
 	branch = giga
-[submodule "benches/arena-hard-auto"]
-	path = benches/arena-hard-auto
-	url = https://github.com/ArtiomNosov/arena-hard-auto.git
-	branch = giga
 [submodule "benches/RuLLMArena"]
 	path = benches/RuLLMArena
 	url = https://github.com/Pupy101/ru_llm_arena.git
@@ -41,3 +37,7 @@
 [submodule "benches/tau2-bench"]
 	path = benches/tau2-bench
 	url = https://github.com/Skripkon/tau2-bench
+[submodule "benches/arena-hard-auto"]
+	path = benches/arena-hard-auto
+	url = git@github.com:Pupy101/arena-hard-auto.git
+	branch = giga
