@@ -1,3 +1,11 @@
+.idea/
+.vscode/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+.env
 data/fastchat/mt_bench/model_answer
 data/fastchat/mt_bench/model_judgment
 data/fastchat/mt_bench-ru/model_answer
