@@ -39,5 +39,5 @@
 	url = https://github.com/Skripkon/tau2-bench
 [submodule "benches/arena-hard-auto"]
 	path = benches/arena-hard-auto
-	url = git@github.com:Pupy101/arena-hard-auto.git
+	url = https://github.com/Pupy101/arena-hard-auto.git
 	branch = giga
