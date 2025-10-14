@@ -41,3 +41,6 @@
 	path = benches/arena-hard-auto
 	url = https://github.com/Pupy101/arena-hard-auto.git
 	branch = giga
+[submodule "benches/gorilla"]
+	path = benches/gorilla
+	url = https://github.com/Skripkon/gorilla.git
