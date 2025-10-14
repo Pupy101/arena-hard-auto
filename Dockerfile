@@ -154,6 +154,12 @@ RUN python -m venv /benches/venvs/tau2 && \
     /benches/venvs/tau2/bin/pip install --no-cache-dir -e tau2/ && \
     /benches/venvs/tau2/bin/pip install --no-cache-dir langchain langchain_gigachat
 
+# BFCL v4
+COPY --chown=appuser:appuser ./benches/gorilla /benches/gorilla
+RUN python -m venv /benches/venvs/gorilla/berkeley-function-call-leaderboard && \
+    /benches/venvs/gorilla/berkeley-function-call-leaderboard/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/gorilla/berkeley-function-call-leaderboard/bin/pip install --no-cache-dir -e gorilla/berkeley-function-call-leaderboard/
+
 # Временно переключаемся на root для создания системных файлов
 USER root
 
