@@ -60,3 +60,9 @@ Example for GigaChat in Advanced (fill variables in `example.env`):
 ```bash
 docker run --env-file example.env -v ./data/live_code_bench:/benches/lcb/output -it <IMAGE> lcb lcb python -m lcb_runner.runner.main --model GigaChat --scenario codegeneration --evaluate --release_version release_v5
 ```
+
+Подробнее про CLI arguments:
+
+[Readme.md](https://github.com/Pupy101/LiveCodeBench/tree/giga)
+
+Например, 25 сентября 2025 года сюда добавлена поддержка release_v6, для запуска указываете соответственно в `--release_version`
