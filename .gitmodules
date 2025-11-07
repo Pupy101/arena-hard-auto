@@ -44,3 +44,7 @@
 [submodule "benches/gorilla"]
 	path = benches/gorilla
 	url = https://github.com/Skripkon/gorilla.git
+[submodule "benches/simple-evals"]
+	path = benches/simple-evals
+	url = https://github.com/ArtiomNosov/simple-evals
+	branch = giga
