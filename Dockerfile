@@ -160,6 +160,18 @@ RUN python -m venv /benches/venvs/gorilla/berkeley-function-call-leaderboard && 
     /benches/venvs/gorilla/berkeley-function-call-leaderboard/bin/pip install --no-cache-dir -U pip setuptools wheel && \
     /benches/venvs/gorilla/berkeley-function-call-leaderboard/bin/pip install --no-cache-dir -e gorilla/berkeley-function-call-leaderboard/
 
+# simple-evals
+COPY --chown=appuser:appuser ./benches/simple-evals /benches/se
+RUN python -m venv /benches/venvs/se && \
+    /benches/venvs/se/bin/pip install --no-cache-dir -U pip setuptools wheel && \
+    /benches/venvs/se/bin/pip install --no-cache-dir openai anthropic pandas numpy blobfile jinja2 requests scipy tqdm tabulate gigachat && \
+    git clone https://github.com/openai/human-eval /benches/human-eval && \
+    true
+
+# Ensure only the se venv can import simple-evals and human-eval from source
+RUN SP=$(/benches/venvs/se/bin/python -c "import site; print(site.getsitepackages()[0])") && \
+    printf "/benches/se\n/benches/human-eval\n" > "$SP/onebutton_se_paths.pth"
+
 # Временно переключаемся на root для создания системных файлов
 USER root
 
