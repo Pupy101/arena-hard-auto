@@ -6,7 +6,8 @@
 1. [Generation](#generation)
 2. [Judge](#judge)
 3. [Show result](#show-result)
-4. [Запуск через venv (без Docker)](#запуск-через-venv-без-docker)
+4. [Vision datasets](#vision-datasets)
+5. [Запуск через venv (без Docker)](#запуск-через-venv-без-docker)
    - [Настройка окружения](#настройка-окружения)
    - [Запуск](#запуск)
 
@@ -67,6 +68,31 @@ Example:
 ```bash
 docker run --env-file example.env -v ./configs/arena-hard-auto:/benches/ah/config -v ./data/arena-hard-auto/:/benches/ah/data -it <IMAGE> ah ah python show_result.py --benchmark arena-hard-v0.1 --judge-names gpt-4-1106-preview --category arena-hard-v0.1
 ```
+
+---
+
+### Vision datasets
+
+Команды идентичны стандартным, отличаются только параметры конфигурации. Примеры:
+
+**Generation:**
+```bash
+python gen_answer.py --setting-file config/arena-hard-vision.yaml --endpoint-file config/endpoint.yaml
+```
+
+**Judge:**
+```bash
+python gen_judgment.py --setting-file config/arena-hard-vision.yaml --endpoint-file config/endpoint.yaml
+```
+
+**Show result:**
+```bash
+python show_result.py --benchmark arena-hard-vision --judge-names gigachat-pro --category vision
+```
+
+**Примечание:** Для vision датасетов требуется переменная окружения `GIGA_ADDITIONAL_HEADERS` в `example.env` (см. раздел [Настройка окружения](#настройка-окружения)).
+
+---
 
 # Запуск через venv (без Docker)
 
