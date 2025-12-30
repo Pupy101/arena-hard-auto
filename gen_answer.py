@@ -41,11 +41,11 @@ def get_answer(
     if "file_path" in question and question["file_path"]:
         user_message["file_path"] = question["file_path"]
     
-    if "file_url" in user_message and "content" not in user_message:
+    if ("file_url" in user_message or "file_path" in user_message) and "content" not in user_message:
         user_message["content"] = "Solve the problem based on the provided file."
     
-    assert "content" in user_message or "file_url" in user_message, \
-        f"Question {question.get('uid', 'unknown')} must have either non-empty prompt or image_url"
+    assert "content" in user_message or "file_url" in user_message or "file_path" in user_message, \
+        f"Question {question.get('uid', 'unknown')} must have either non-empty prompt or file_url/file_path"
     
     messages.append(user_message)
 
