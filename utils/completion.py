@@ -186,7 +186,6 @@ def chat_completion_openrouter(model, messages, temperature, max_tokens, api_dic
         model = api_dict["model_name"]
     
     def get_file_format(file_path):
-        # Normalize extension for consistent format detection (e.g., "MP3" -> "mp3").
         return Path(file_path).suffix.lstrip(".").lower()
     
     def encode_file_to_base64(file_path):
