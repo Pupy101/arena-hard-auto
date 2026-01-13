@@ -37,4 +37,8 @@ JUDGE_SETTINGS = {
         "baseline": "gigachat-2-max",
         "system_prompt": OG_ARENA_HARD_PROMPT,
     },
+    "audio": {
+        "baseline": "gemini-2.5-flash",
+        "system_prompt": OG_ARENA_HARD_PROMPT,
+    },
 }

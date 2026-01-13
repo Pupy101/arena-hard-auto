@@ -8,9 +8,10 @@ import pandas as pd
 import requests
 from typing import Optional, TYPE_CHECKING
 import boto3
-
+from pathlib import Path
 from glob import glob
 from threading import Lock
+import base64
 
 from giga import GigaChat
 from tqdm import tqdm
@@ -170,6 +171,157 @@ def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=No
         except KeyError:
             print(type(e), e)
             break
+    
+    return output
+
+
+@register_api("openrouter")
+def chat_completion_openrouter(model, messages, temperature, max_tokens, api_dict=None, **kwargs):
+    assert api_dict is not None, "api_dict is required for OpenRouter"
+    api_base = api_dict.get("api_base", "https://openrouter.ai/api/v1")
+    api_key = api_dict.get("api_key")
+    assert api_key, "api_key required in api_dict for OpenRouter"
+    
+    if api_dict and "model_name" in api_dict:
+        model = api_dict["model_name"]
+    
+    def get_file_format(file_path):
+        # Normalize extension for consistent format detection (e.g., "MP3" -> "mp3").
+        return Path(file_path).suffix.lstrip(".").lower()
+    
+    def encode_file_to_base64(file_path):
+        with open(file_path, "rb") as f:
+            return base64.b64encode(f.read()).decode('utf-8')
+    
+    def is_audio_file(file_path):
+        audio_formats = {'wav', 'mp3', 'aiff', 'aac', 'ogg', 'flac', 'm4a'}
+        ext = get_file_format(file_path)
+        return ext in audio_formats
+    
+    def is_image_file(file_path):
+        image_formats = {'jpg', 'jpeg', 'png', 'gif', 'webp'}
+        ext = get_file_format(file_path)
+        return ext in image_formats
+    
+    processed_messages = []
+    for msg in messages:
+        m = msg.copy()
+        
+        file_path = m.pop("file_path", None)
+        
+        text_content = m.get("content", "")
+
+        if not text_content and not file_path:
+            print("skip %s because file_path is not provided" % m)
+            continue
+
+        if file_path and not os.path.exists(file_path):
+            print(f"Warning: File not found: {file_path}")
+            continue
+
+        if file_path:
+            file_format = get_file_format(file_path)
+
+        assert file_path is not None and file_format, "Unknown format for file"
+        
+        content_parts = []
+        
+        if text_content:
+            content_parts.append({
+                "type": "text",
+                "text": text_content
+            })
+
+        if file_path:
+            base64_file = encode_file_to_base64(file_path)
+        
+        if file_path and is_audio_file(file_path):
+            content_parts.append({
+                "type": "input_audio",
+                "input_audio": {
+                    "data": base64_file,
+                    "format": file_format
+                }
+            })
+        elif file_path and is_image_file(file_path):
+            data_uri = f"data:image/{file_format};base64,{base64_file}"
+            content_parts.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": data_uri
+                }
+            })
+        elif file_path:
+            print(f"Warning: Unknown file format for file: {file_path}")
+            continue
+        
+        if not content_parts:
+            print(f"Warning: No content parts were created for file: {file_path}")
+            continue
+        
+        if len(content_parts) == 1 and content_parts[0]["type"] == "text":
+            m["content"] = content_parts[0]["text"]
+        else:
+            m["content"] = content_parts
+        
+        processed_messages.append(m)
+    
+    url = f"{api_base}/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    
+    if api_dict:
+        if "http_referer" in api_dict:
+            headers["HTTP-Referer"] = api_dict["http_referer"]
+        if "x_title" in api_dict:
+            headers["X-Title"] = api_dict["x_title"]
+    
+    payload = {
+        "model": model,
+        "messages": processed_messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+    
+    output = API_ERROR_OUTPUT
+    for _ in range(API_MAX_RETRY):
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=120)
+            response.raise_for_status()
+            
+            result = response.json()
+            output = {
+                "answer": result["choices"][0]["message"]["content"]
+            }
+            break
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP Error: {e}")
+            if e.response is not None:
+                if e.response.status_code == 429:
+                    time.sleep(API_RETRY_SLEEP)
+                elif e.response.status_code == 400:
+                    print(f"Request payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+                    print(f"Response: {e.response.text}")
+                    break
+                else:
+                    time.sleep(API_RETRY_SLEEP)
+            else:
+                time.sleep(API_RETRY_SLEEP)
+        except requests.exceptions.RequestException as e:
+            print(f"Request Error: {type(e).__name__}: {e}")
+            time.sleep(API_RETRY_SLEEP)
+        except KeyError as e:
+            print(f"KeyError: {e}")
+            if 'response' in locals() and response is not None:
+                print(f"Response: {response.text}")
+            else:
+                print("No response available")
+            break
+        except Exception as e:
+            print(f"Unexpected error: {type(e).__name__}: {e}")
+            time.sleep(API_RETRY_SLEEP)
     
     return output
 
@@ -1262,13 +1414,21 @@ def chat_completion_giga(model, messages, temperature, max_tokens, api_dict=None
             CLIENT = GigaChat()
     
     processed_messages = []
+
+    multimodal_mode = os.environ.get("GIGA_MULTIMODAL_MODE", "")
+    
     for message in messages:
         processed_message = message.copy()
 
-        if "image_path" in processed_message:     
-            image_path = processed_message.pop("image_path", None)
-            processed_message["files"] = []
-            processed_message["files"].append({"content": image_path})
+        if multimodal_mode == "upload":
+            processed_message.pop("file_url", None)
+
+        if "file_path" in processed_message:     
+            file_path = processed_message.pop("file_path", None)
+
+            if "files" not in processed_message:
+                processed_message["files"] = []
+            processed_message["files"].append({"content": file_path})
         
         processed_messages.append(processed_message)
 
