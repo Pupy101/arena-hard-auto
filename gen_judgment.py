@@ -3,6 +3,7 @@ import yaml
 import argparse
 import os
 import concurrent.futures
+from omegaconf import OmegaConf
 
 from tqdm import tqdm
 
@@ -52,6 +53,9 @@ def pairwise_judgment(question, baseline, answer, reference, configs, settings):
             "content": user_prompt,
         }
     ]
+    
+    if "file_path" in question and question["file_path"]:
+        messages[-1]["file_path"] = os.path.join("data", configs["main_bench_name"], configs["bench_name"], "cache", question["file_path"][9:])
     
     if "image_url" in question and question["image_url"]:
         assert len(messages) > 1, messages
@@ -131,16 +135,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-samples", type=int, default=None, help="Maximum number of samples to process (limits to first N samples)"
     )
+    parser.add_argument("--question-file", type=str, default="question.jsonl")
     args = parser.parse_args()
     print(args)
 
     configs = make_config(args.setting_file)
-    endpoint_list = make_config(args.endpoint_file)
+    endpoint_list = OmegaConf.to_container(OmegaConf.load(args.endpoint_file), resolve=True)
 
     print(f'judge model: {configs["judge_model"]}, reference: {configs["reference"]}, temperature: {configs["temperature"]}, max tokens: {configs["max_tokens"]}')
 
-    question_file = os.path.join("data", configs["bench_name"], "question.jsonl")
-    answer_dir = os.path.join("data", configs["bench_name"], "model_answer")
+    question_file = os.path.join("data", configs["main_bench_name"], configs["bench_name"], args.question_file)
+    answer_dir = os.path.join("data", configs["main_bench_name"], configs["bench_name"], "model_answer")
 
     questions = load_questions(question_file)
     
@@ -158,9 +163,9 @@ if __name__ == "__main__":
         ref_answers = [answer_dir[model] for model in configs["reference"]]
     else:
         ref_answers = None
-    
+
     output_files = {}
-    output_dir = f"data/{configs['bench_name']}/model_judgment/{configs['judge_model']}"
+    output_dir = f"data/{configs['main_bench_name']}/{configs['bench_name']}/model_judgment/{configs['judge_model']}"
     for model in models:
         output_files[model] = os.path.join(
             output_dir,

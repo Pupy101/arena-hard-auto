@@ -16,7 +16,8 @@ def load_judgments(judge_names, benchmark, weight=3):
         dfs.extend([
             pd.read_json(f, lines=True) for f in tqdm(glob(os.path.join(
                 "data",
-                benchmark, 
+                'arena-hard-auto',
+                benchmark,
                 "model_judgment", 
                 judge_name, 
                 "*.jsonl"

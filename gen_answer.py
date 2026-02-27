@@ -39,7 +39,7 @@ def get_answer(
         user_message["file_url"] = question["file_url"]
     
     if "file_path" in question and question["file_path"]:
-        user_message["file_path"] = question["file_path"]
+        user_message["file_path"] = os.path.join("data", config["main_bench_name"], config["bench_name"], "cache", question["file_path"][9:])
     
     if "file_url" in user_message and "content" not in user_message:
         user_message["content"] = "Solve the problem based on the provided file."
@@ -57,7 +57,6 @@ def get_answer(
         "api_dict": get_endpoint(settings["endpoints"]),
         "messages": messages,
     }
-    
     
     output = api_completion_func(**kwargs)
         
@@ -105,12 +104,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-samples", type=int, default=None, help="Maximum number of samples to process (limits to first N samples)"
     )
+    parser.add_argument("--question-file", type=str, default='question.jsonl', help="Question file to process")
     args = parser.parse_args()
 
     config = make_config(args.config_file)
     endpoints = make_config(args.endpoint_file)
 
-    existing_answer = load_model_answers(os.path.join("data", config["bench_name"], "model_answer"))
+    existing_answer = load_model_answers(os.path.join("data", config["main_bench_name"], config["bench_name"], "model_answer"))
     
     print(config)
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
         assert model in endpoints
         endpoint_settings = endpoints[model]
 
-        question_file = os.path.join("data", config["bench_name"], "question.jsonl")
+        question_file = os.path.join("data", config["main_bench_name"], config["bench_name"], args.question_file)
         questions = load_questions(question_file)
         
         # Limit to first N samples if --max-samples is specified
@@ -126,14 +126,14 @@ if __name__ == "__main__":
             questions = questions[:args.max_samples]
             print(f"Limited to first {args.max_samples} samples")
 
-        answer_file = os.path.join("data", config["bench_name"], "model_answer", f"{model}.jsonl")
+        answer_file = os.path.join("data", config["main_bench_name"], config["bench_name"], "model_answer", f"{model}.jsonl")
         print(f"Output to {answer_file}")
 
         if "parallel" in endpoint_settings:
             parallel = endpoint_settings["parallel"]
         else:
             parallel = 1
-            
+
         if 'local_engine' in endpoint_settings and endpoint_settings['local_engine']:
             local_completion_func = registered_engine_completion[endpoint_settings['api_type']]
             

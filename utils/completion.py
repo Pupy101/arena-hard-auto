@@ -12,9 +12,13 @@ from pathlib import Path
 from glob import glob
 from threading import Lock
 import base64
-
+import uuid
 from giga import GigaChat
 from tqdm import tqdm
+from google.genai.types import Part, Content, GenerateContentConfig, HttpOptions as GoogleHttpOptions
+from google import genai
+import threading
+import time
 
 from utils.bedrock_utils import create_llama3_body, create_nova_messages, extract_answer
 
@@ -121,6 +125,63 @@ def make_config(config_file: str) -> dict:
 
     return config_kwargs
 
+class GeminiClientWrapper:
+    def __init__(self, api_key, index, BASE_URL_SDK, INITIAL_CONCURRENCY = 8, MIN_CONCURRENCY = 1):
+        self.index = index
+
+        HTTP_OPTIONS = GoogleHttpOptions(base_url=BASE_URL_SDK, client_args={"verify": False, "cert": None})
+
+        self.client = genai.Client(api_key=api_key, http_options=HTTP_OPTIONS)
+        self.concurrency = INITIAL_CONCURRENCY
+        self.min_concurrency = MIN_CONCURRENCY
+        self.active_requests = 0
+        self.lock = threading.Lock()
+        self.is_active = True
+        self.cooldown_until = 0
+        self.consecutive_rate_limits = 0
+
+    def can_accept_request(self):
+        with self.lock:
+            if not self.is_active:
+                return False
+            if time.time() < self.cooldown_until:
+                return False
+            return self.active_requests < self.concurrency
+
+    def acquire(self):
+        with self.lock:
+            self.active_requests += 1
+
+    def release(self):
+        with self.lock:
+            self.active_requests -= 1
+
+    def throttle(self):
+        """Called when 429 is encountered"""
+        with self.lock:
+            self.consecutive_rate_limits += 1
+            
+            # If we are already at MIN_CONCURRENCY and keep hitting limits
+            if self.concurrency == self.min_concurrency and self.consecutive_rate_limits >= 3:
+                print(f"[Client {self.index}] Repeated 429s at min concurrency. Likely Quota Exceeded. Marking inactive.")
+                self.is_active = False
+                return
+
+            old_concurrency = self.concurrency
+            self.concurrency = max(self.min_concurrency, self.concurrency // 2)
+            self.cooldown_until = time.time() + 5 # 5 seconds cooldown
+            print(f"[Client {self.index}] Throttling down: {old_concurrency} -> {self.concurrency} (Consecutive 429s: {self.consecutive_rate_limits})")
+
+    def mark_inactive(self):
+        with self.lock:
+            self.is_active = False
+            print(f"[Client {self.index}] Quota exceeded or fatal error. Marking inactive.")
+
+    def success(self):
+        """Called on success"""
+        with self.lock:
+            self.consecutive_rate_limits = 0 # Reset counter on success
+
 
 @register_api("openai")
 def chat_completion_openai(model, messages, temperature, max_tokens, api_dict=None, **kwargs):
@@ -186,7 +247,7 @@ def chat_completion_openrouter(model, messages, temperature, max_tokens, api_dic
         model = api_dict["model_name"]
     
     def get_file_format(file_path):
-        return Path(file_path).suffix.lstrip(".")
+        return Path(file_path).suffix.lstrip(".").lower()
     
     def encode_file_to_base64(file_path):
         with open(file_path, "rb") as f:
@@ -657,6 +718,40 @@ def http_completion_gemini(model, messages, **kwargs):
             print(type(e), e)
             print(response.json())
     return output
+    
+
+@register_api("gemini-audio")
+def http_completion_gemini_audio(api_dict, messages, **kwargs):
+    client_wrapper = GeminiClientWrapper(api_dict['api_key'], 0, api_dict['api_base'], kwargs['parallel'])
+
+    user_message_idx = 0
+    config = None
+    if len(messages) > 1:
+        user_message_idx += 1
+        config=GenerateContentConfig(
+            system_instruction=messages[0]['content'],
+        )
+    
+    user_message = [Part.from_text(text=messages[user_message_idx]['content'])]
+    if 'file_path' in messages[user_message_idx]:
+        with open(messages[user_message_idx]['file_path'], "rb") as f:
+            audio_bytes = f.read()
+        
+        audio_part = Part.from_bytes(data=audio_bytes, mime_type='audio/wav')
+        user_message.append(audio_part)
+
+    resp = client_wrapper.client.models.generate_content(
+        model='models/' + kwargs['model'],
+        contents=[
+            Content(
+                role='user',
+                parts=user_message
+            )
+        ],
+        config=config,
+    )
+
+    return {'answer': resp.candidates[0].content.parts[0].text}
     
 
 @register_api("vertex")
@@ -1404,6 +1499,18 @@ def chat_completion_aws_bedrock_deepseek(messages, api_dict=None, aws_region="us
     return output
 
 
+def prepare_audio_file(file_path):
+    file_path = Path(file_path)
+    with open(file_path, mode="rb") as fp:
+        encode_data = base64.b64encode(fp.read())
+    return {
+        "content": encode_data.decode("utf-8"),
+        "mime": "audio/wav",
+        "type": "audio",
+        "id": str(uuid.uuid4()),
+        "name": file_path.name}
+
+
 @register_api("giga")
 def chat_completion_giga(model, messages, temperature, max_tokens, api_dict=None, **kwargs):
     global CLIENT
@@ -1427,8 +1534,8 @@ def chat_completion_giga(model, messages, temperature, max_tokens, api_dict=None
 
             if "files" not in processed_message:
                 processed_message["files"] = []
-            processed_message["files"].append({"content": file_path})
-        
+            processed_message["files"].append(prepare_audio_file(file_path))
+
         processed_messages.append(processed_message)
 
     output = API_ERROR_OUTPUT
