@@ -76,7 +76,7 @@ def pairwise_judgment(question, baseline, answer, reference, configs, settings):
     api_completion_func = registered_api_completion[settings["api_type"]]
     output = api_completion_func(**kwargs)
     
-    if output is None:
+    if output is None or output.get('answer') is None:
         return None
 
     score = get_score(output['answer'], configs["regex_patterns"])

@@ -46,6 +46,8 @@ def load_judgments(judge_names, benchmark, weight=3):
         "B=A": [0.5],
         "B<<A": [1] * weight,
         "B<A": [1],
+        "A": [1],
+        "B": [0],
     }
 
     _data['scores'] = _data.games.map(
