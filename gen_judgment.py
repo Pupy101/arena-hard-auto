@@ -3,6 +3,7 @@ import yaml
 import argparse
 import os
 import concurrent.futures
+import threading 
 from omegaconf import OmegaConf
 
 from tqdm import tqdm
@@ -123,9 +124,9 @@ def judgment(args):
         settings=args['settings'],
     )
     output["games"].append(result)
-
-    with open(args['output_file'], "a", encoding="utf-8") as f:
-        f.write(json.dumps(output, ensure_ascii=False) + "\n")
+    with args['lock']:
+        with open(args['output_file'], "a", encoding="utf-8") as f:
+            f.write(json.dumps(output, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
@@ -179,6 +180,8 @@ if __name__ == "__main__":
 
     endpoint_settings = endpoint_list[configs["judge_model"]]
 
+    file_locks = {model: threading.Lock() for model in models}
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=endpoint_settings["parallel"]) as executor:
         futures = []
         for model in models:
@@ -209,6 +212,7 @@ if __name__ == "__main__":
                 kwargs["configs"] = configs
                 kwargs["settings"] = endpoint_settings
                 kwargs["output_file"] = output_files[model]
+                kwargs["lock"] = file_locks[model]
                                 
                 future = executor.submit(judgment, kwargs)
                 futures.append(future)
